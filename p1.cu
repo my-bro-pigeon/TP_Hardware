@@ -11,6 +11,7 @@ void MatrixInit3D(float *M, int n, int p, int l,int val) {
             for (int j = 0; j < p; j++) {
                 for (int k = 0; k < n; k++) {
                     M[i * p * n + j * n + k] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+                
                 }
             }
         }
@@ -102,42 +103,33 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *Mout, int n) {
     }
 }
 
-void Convolution2DCPU(float *input, float *kernels, float *output) {
-    int inputWidth = 32;
-    int inputHeight = 32;
-    int inputDepth = 1;
-    int kernelSize = 5;
-    int outputWidth = 28;
-    int outputHeight = 28;
-    int outputDepth = 6;
+__global__ void Convolution2DGPU(float *input, float *kernels, float *output,int inputWidth, int kernelSize) { 
 
-    // Pour chaque noyau
-    for (int kernelIdx = 0; kernelIdx < outputDepth; ++kernelIdx) {
-        for (int y = 0; y < outputHeight; ++y) {
-            for (int x = 0; x < outputWidth; ++x) {
-                float sum = 0.0f;
-                // Application de la convolution pour chaque pixel de sortie
-                for (int ky = 0; ky < kernelSize; ++ky) {
-                    for (int kx = 0; kx < kernelSize; ++kx) {
-                        for (int inputChannel = 0; inputChannel < inputDepth; ++inputChannel) {
-                            int inputX = x + kx;
-                            int inputY = y + ky;
-                            // Calcul de l'indice dans la matrice d'entrée
-                            int inputIdx = inputY * inputWidth * inputDepth + inputX * inputDepth + inputChannel;
-                            // Calcul de l'indice dans le noyau
-                            int kernelIdx = kernelSize * kernelSize * inputChannel + ky * kernelSize + kx;
-                            // Sommation pondérée des valeurs de la matrice d'entrée et du noyau
-                            sum += input[inputIdx] * kernels[kernelIdx];
-                        }
-                    }
-                }
-                // Stockage du résultat dans la matrice de sortie
-                int outputIdx = y * outputWidth * outputDepth + x * outputDepth + kernelIdx;
-                output[outputIdx] = sum;
-            }
+    int n = gridDim.x;
+    int p = gridDim.y;
+    //int l = gridDim.z;
+    int outputIdx = blockIdx.z * n * p + blockIdx.y * n + blockIdx.x;
+    int x = blockIdx.x;
+    int y = blockIdx.y;
+    int z = blockIdx.z;
+
+    float sum=0.0f;
+    for (int ky = 0; ky < kernelSize; ++ky) {
+        for (int kx = 0; kx < kernelSize; ++kx) {
+            int inputX = x + kx;
+            int inputY = y + ky;
+            int inputIdx = inputY * inputWidth + inputX;
+            int kernelIdx = z*kernelSize*kernelSize + ky*kernelSize+kx;
+            sum += input[inputIdx] * kernels[kernelIdx];
         }
     }
+    output[outputIdx] = sum;
 }
+    
+
+
+
+
 
 
 /// tester  la somme et la multiplication de matrices  
@@ -182,13 +174,16 @@ int main() {
     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
     MatrixInit3D(C1_kernel, nk,pk,lk,0);
+
     
     // Copie de la matrice du CPU vers le GPU
     cudaMemcpy(d_raw_data, raw_data, nr * pr * lr*sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_C1_data, C1_data, nC1 * pC1 * lC1* sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_S1_data, S1_data, nS1 * pS1 * lS1*  sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_C1_kernel, C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyHostToDevice);
-    //dim3 gridDim(n,p);
+
+    dim3 gridDim(nC1,nC1,lC1);
+    Convolution2DGPU<<<gridDim,1>>>(d_raw_data, d_C1_kernel, d_C1_data,nr,nk);
 
     cudaMemcpy(raw_data, d_raw_data, nr * pr * lr* sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(C1_data, d_C1_data, nC1 * pC1 * lC1*sizeof(float), cudaMemcpyDeviceToHost);
@@ -196,13 +191,13 @@ int main() {
     cudaMemcpy(C1_kernel, d_C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyDeviceToHost);
 
     // Affichage de la matrice sur le CPU
-    // printf("Matrice raw_data :\n");
+    printf("Matrice raw_data :\n");
 
-    // MatrixPrint3D(raw_data, nr, pr,lr);
+    MatrixPrint3D(raw_data, nr, pr,lr);
 
-    // printf("Matrice C1_data :\n");
+    printf("Matrice C1_data :\n");
 
-    // MatrixPrint3D(C1_data, nC1, pC1,lC1);
+    MatrixPrint3D(C1_data, nC1, pC1,lC1);
 
     // printf("Matrice S1_data :\n");
 
