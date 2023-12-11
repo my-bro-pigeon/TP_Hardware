@@ -103,6 +103,11 @@ __global__ void cudaMatrixMult(float *M1, float *M2, float *Mout, int n) {
     }
 }
 
+__device__ float activation_tanh(float M) {
+    return tanh(M);
+}
+
+
 __global__ void Convolution2DGPU(float *input, float *kernels, float *output,int inputWidth, int kernelSize) { 
 
     int n = gridDim.x;
@@ -123,16 +128,16 @@ __global__ void Convolution2DGPU(float *input, float *kernels, float *output,int
             sum += input[inputIdx] * kernels[kernelIdx];
         }
     }
-    output[outputIdx] = sum;
+    output[outputIdx] = activation_tanh(sum);
 }
     
 
 __global__ void Moyennage2DGPU(float *input, float *output,int inputWidth) { 
 
-    // int n = gridDim2.x; //14
-    // int p = gridDim2.y; //14
-    int n = 14; //14
-    int p = 14; 
+    int n = gridDim.x; //14
+    int p = gridDim.y; //14
+    //int n = 14; //14
+    //int p = 14; 
     int outputIdx = blockIdx.z * n * p + blockIdx.y * n + blockIdx.x; //pour parcourir mat sortie
     int x = blockIdx.x;
     int y = blockIdx.y;
@@ -141,15 +146,14 @@ __global__ void Moyennage2DGPU(float *input, float *output,int inputWidth) {
     float sum=0.0f;
     for (int ky = 0; ky < 2; ++ky) {
         for (int kx = 0; kx < 2; ++kx) {
-            int inputX = z*inputWidth*inputWidth + 2*x + kx;
-            int inputY = z*inputWidth*inputWidth + 2*y + ky;
-            int inputIdx = inputY * inputWidth + inputX;
+            int inputX = 2*x + kx;
+            int inputY = 2*y + ky;
+            int inputIdx = z*inputWidth*inputWidth + inputY * inputWidth + inputX;
             sum += input[inputIdx];
         }
     }
     output[outputIdx] = sum/4;
 }
-
 
 
 
@@ -196,7 +200,8 @@ int main() {
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
     MatrixInit3D(C1_kernel, nk,pk,lk,1);
 
-    C1_kernel[12]=1;
+    C1_kernel[12]=2;
+    C1_kernel[25+12]=1;
 
     
     // Copie de la matrice du CPU vers le GPU
@@ -217,9 +222,9 @@ int main() {
     cudaMemcpy(C1_kernel, d_C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyDeviceToHost);
 
     // Affichage de la matrice sur le CPU
-    // printf("Matrice raw_data :\n");
+    printf("Matrice raw_data :\n");
 
-    // MatrixPrint3D(raw_data, nr, pr,lr);
+    MatrixPrint3D(raw_data, nr, pr,lr);
 
     // printf("Matrice C1_data :\n");
 
@@ -229,9 +234,9 @@ int main() {
 
     MatrixPrint3D(S1_data, nS1, pS1,lS1);
 
-    // printf("Matrice C1_kernel :\n");
+    printf("Matrice C1_kernel :\n");
 
-    // MatrixPrint3D(C1_kernel, nk, pk,lk);
+    MatrixPrint3D(C1_kernel, nk, pk,lk);
 
     // Libération de la mémoire sur le CPU et le GPU
     free(raw_data);
