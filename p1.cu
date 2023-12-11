@@ -10,8 +10,8 @@ void MatrixInit3D(float *M, int n, int p, int l,int val) {
         for (int i = 0; i < l; i++) {
             for (int j = 0; j < p; j++) {
                 for (int k = 0; k < n; k++) {
-                    M[i * p * n + j * n + k] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
-                
+                    //M[i * p * n + j * n + k] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+                    M[i * p * n + j * n + k] = 1;
                 }
             }
         }
@@ -127,7 +127,28 @@ __global__ void Convolution2DGPU(float *input, float *kernels, float *output,int
 }
     
 
+__global__ void Moyennage2DGPU(float *input, float *output,int inputWidth) { 
 
+    // int n = gridDim2.x; //14
+    // int p = gridDim2.y; //14
+    int n = 14; //14
+    int p = 14; 
+    int outputIdx = blockIdx.z * n * p + blockIdx.y * n + blockIdx.x; //pour parcourir mat sortie
+    int x = blockIdx.x;
+    int y = blockIdx.y;
+    int z = blockIdx.z;
+
+    float sum=0.0f;
+    for (int ky = 0; ky < 2; ++ky) {
+        for (int kx = 0; kx < 2; ++kx) {
+            int inputX = z*inputWidth*inputWidth + 2*x + kx;
+            int inputY = z*inputWidth*inputWidth + 2*y + ky;
+            int inputIdx = inputY * inputWidth + inputX;
+            sum += input[inputIdx];
+        }
+    }
+    output[outputIdx] = sum/4;
+}
 
 
 
@@ -173,7 +194,9 @@ int main() {
     MatrixInit3D(raw_data, nr,pr,lr,0);
     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
-    MatrixInit3D(C1_kernel, nk,pk,lk,0);
+    MatrixInit3D(C1_kernel, nk,pk,lk,1);
+
+    C1_kernel[12]=1;
 
     
     // Copie de la matrice du CPU vers le GPU
@@ -185,27 +208,30 @@ int main() {
     dim3 gridDim(nC1,nC1,lC1);
     Convolution2DGPU<<<gridDim,1>>>(d_raw_data, d_C1_kernel, d_C1_data,nr,nk);
 
+    dim3 gridDim2(nS1,pS1,lS1);
+    Moyennage2DGPU<<<gridDim2,1>>>(d_C1_data, d_S1_data, nC1);
+
     cudaMemcpy(raw_data, d_raw_data, nr * pr * lr* sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(C1_data, d_C1_data, nC1 * pC1 * lC1*sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(S1_data, d_S1_data, nS1 * pS1 * lS1* sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(C1_kernel, d_C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyDeviceToHost);
 
     // Affichage de la matrice sur le CPU
-    printf("Matrice raw_data :\n");
+    // printf("Matrice raw_data :\n");
 
-    MatrixPrint3D(raw_data, nr, pr,lr);
+    // MatrixPrint3D(raw_data, nr, pr,lr);
 
-    printf("Matrice C1_data :\n");
+    // printf("Matrice C1_data :\n");
 
-    MatrixPrint3D(C1_data, nC1, pC1,lC1);
+    // MatrixPrint3D(C1_data, nC1, pC1,lC1);
 
-    // printf("Matrice S1_data :\n");
+    printf("Matrice S1_data :\n");
 
-    // MatrixPrint3D(S1_data, nS1, pS1,lS1);
+    MatrixPrint3D(S1_data, nS1, pS1,lS1);
 
-    printf("Matrice C1_kernel :\n");
+    // printf("Matrice C1_kernel :\n");
 
-    MatrixPrint3D(C1_kernel, nk, pk,lk);
+    // MatrixPrint3D(C1_kernel, nk, pk,lk);
 
     // Libération de la mémoire sur le CPU et le GPU
     free(raw_data);
