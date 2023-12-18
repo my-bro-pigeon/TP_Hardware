@@ -60,6 +60,12 @@ Convolution 2D et subsampling
 
 
 
+
+
+
+
+
+
 Partie 3 - Un peu de Python
 -
 
