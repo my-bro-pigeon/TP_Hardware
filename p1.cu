@@ -10,8 +10,8 @@ void MatrixInit3D(float *M, int n, int p, int l,int val) {
         for (int i = 0; i < l; i++) {
             for (int j = 0; j < p; j++) {
                 for (int k = 0; k < n; k++) {
-                    //M[i * p * n + j * n + k] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
-                    M[i * p * n + j * n + k] = 1;
+                    M[i * p * n + j * n + k] = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+                    //M[i * p * n + j * n + k] = 1;
                 }
             }
         }
@@ -48,9 +48,9 @@ void MatrixPrint(float *M, int n, int p){
 void MatrixPrint3D(float *M, int n, int p, int l) {
     for (int i = 0; i < l; ++i) {
         printf("Matrice %d :\n", i + 1);
-        for (int j = 0; j < n; ++j) {
-            for (int k = 0; k < p; ++k) {
-                printf("%.2f\t", M[i * p * n + k * n + j]);
+        for (int j = 0; j < p; ++j) {
+            for (int k = 0; k < n; ++k) {
+                printf("%.2f\t", M[i * p * n + j * n + k]);
             }
             printf("\n");
         }
@@ -155,9 +155,18 @@ __global__ void Moyennage2DGPU(float *input, float *output,int inputWidth) {
     output[outputIdx] = sum/4;
 }
 
+__global__ void Flatten(float *input, float *output) {
+    int n = gridDim.x; 
+    int p = gridDim.y; 
+    int l = gridDim.z;
+    int size = n*p*l;
+    int idx = blockIdx.z * n * p + blockIdx.y * n + blockIdx.x;
+    if (idx < size) {
+        output[idx] = input[idx];
+    }
+}
 
-
-/// tester  la somme et la multiplication de matrices  
+/// modèle global  
 
 int main() {
     
@@ -181,6 +190,79 @@ int main() {
     int nk=5;
     int pk=5;
     int lk=6;
+    float *Conv2_data;
+    float *d_Conv2_data;
+    int nC2=10;
+    int pC2=10;
+    int lC2=16;
+    float *S2_data;
+    float *d_S2_data;
+    int nS2=5;
+    int pS2=5;
+    int lS2=16;
+    float *Conv2_kernel;
+    float *d_Conv2_kernel;
+    int nk2=5;
+    int pk2=5;
+    int lk2=16;
+    float *flatten_data;
+    float *d_flatten_data;
+    int nf=400;
+    int pf=1;
+    int lf=1;
+
+    //couche dense 1
+    float *dense1_weight;
+    float *d_dense1_weight;
+    int ndw1=400;
+    int pdw1=120;
+    int ldw1=1;
+    float *dense1_bias;
+    float *d_dense1_bias;
+    int ndb1=120;
+    int pdb1=1;
+    int ldb1=1;
+    float *dense1_data;
+    float *d_dense1_data;
+    int ndd1=120;
+    int pdd1=1;
+    int ldd1=1;
+
+    //couche dense 2
+    float *dense2_weight;
+    float *d_dense2_weight;
+    int ndw2=120;
+    int pdw2=84;
+    int ldw2=1;
+    float *dense2_bias;
+    float *d_dense2_bias;
+    int ndb2=84;
+    int pdb2=1;
+    int ldb2=1;
+    float *dense2_data;
+    float *d_dense2_data;
+    int ndd2=84;
+    int pdd2=1;
+    int ldd2=1;
+
+    //couche dense 3
+    float *dense3_weight;
+    float *d_dense3_weight;
+    int ndw3=84;
+    int pdw3=10;
+    int ldw3=1;
+    float *dense3_bias;
+    float *d_dense3_bias;
+    int ndb3=10;
+    int pdb3=1;
+    int ldb3=1;
+    float *dense3_data;
+    float *d_dense3_data;
+    int ndd3=10;
+    int pdd3=1;
+    int ldd3=1;
+
+
     srand(time(NULL));
 
     // Allocation de mémoire pour la matrice sur le GPU
@@ -188,20 +270,37 @@ int main() {
     cudaMalloc((void **)&d_C1_data, nC1 * pC1 * lC1* sizeof(float));
     cudaMalloc((void **)&d_S1_data, nS1 * pS1 * lS1* sizeof(float));
     cudaMalloc((void **)&d_C1_kernel, nk * pk * lk* sizeof(float));
+    cudaMalloc((void **)&d_Conv2_data, nC2 * pC2 * lC2* sizeof(float));
+    cudaMalloc((void **)&d_S2_data, nS2 * pS2 * lS2* sizeof(float));
+    cudaMalloc((void **)&d_Conv2_kernel, nk2 * pk2 * lk2* sizeof(float));
+    cudaMalloc((void **)&d_flatten_data, nf * pf * lf* sizeof(float));
 
     // Allocation et initialisation de la matrice sur le CPU
     raw_data = (float *)malloc(nr * pr * lr*sizeof(float));
     C1_data = (float *)malloc(nC1 * pC1 * lC1*sizeof(float));
     S1_data = (float *)malloc(nS1 * pS1 * lS1*sizeof(float));
     C1_kernel = (float *)malloc(nk * pk * lk* sizeof(float));
+
+    Conv2_data = (float *)malloc(nC2 * pC2 * lC2*sizeof(float));
+    S2_data = (float *)malloc(nS2 * pS2 * lS2*sizeof(float));
+    Conv2_kernel = (float *)malloc(nk2 * pk2 * lk2* sizeof(float));
+    flatten_data = (float *)malloc(nf * pf * lf* sizeof(float));
     
     MatrixInit3D(raw_data, nr,pr,lr,0);
     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
-    MatrixInit3D(C1_kernel, nk,pk,lk,1);
+    MatrixInit3D(C1_kernel, nk,pk,lk,0);
 
-    C1_kernel[12]=2;
-    C1_kernel[25+12]=1;
+    MatrixInit3D(Conv2_data, nC2,pC2,lC2,1);
+    MatrixInit3D(S2_data, nS2,pS2,lS2,1);
+    MatrixInit3D(Conv2_kernel, nk2,pk2,lk2,0);
+
+    MatrixInit3D(flatten_data, nf,pf,lf,1);
+
+    // C1_kernel[12]=2;
+    // C1_kernel[25+12]=1;
+
+    // Conv2_kernel[12]=2;
 
     
     // Copie de la matrice du CPU vers le GPU
@@ -210,33 +309,69 @@ int main() {
     cudaMemcpy(d_S1_data, S1_data, nS1 * pS1 * lS1*  sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_C1_kernel, C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyHostToDevice);
 
+    cudaMemcpy(d_Conv2_data, Conv2_data, nC2 * pC2 * lC2* sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_S2_data, S2_data, nS2 * pS2 * lS2*  sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_Conv2_kernel, Conv2_kernel, nk2 * pk2 * lk2* sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_flatten_data, flatten_data, nf * pf * lf* sizeof(float), cudaMemcpyHostToDevice);
+
     dim3 gridDim(nC1,nC1,lC1);
     Convolution2DGPU<<<gridDim,1>>>(d_raw_data, d_C1_kernel, d_C1_data,nr,nk);
 
     dim3 gridDim2(nS1,pS1,lS1);
     Moyennage2DGPU<<<gridDim2,1>>>(d_C1_data, d_S1_data, nC1);
 
+    dim3 gridDim3(nC2,nC2,lC2);
+    Convolution2DGPU<<<gridDim3,1>>>(d_S1_data, d_Conv2_kernel, d_Conv2_data,nS1,nk2);
+
+    dim3 gridDim4(nS2,pS2,lS2);
+    Moyennage2DGPU<<<gridDim4,1>>>(d_Conv2_data, d_S2_data, nC2);
+
+    dim3 gridDim5(nS2,pS2,lS2);
+    Flatten<<<gridDim5,1>>>(d_S2_data, d_flatten_data);
+
     cudaMemcpy(raw_data, d_raw_data, nr * pr * lr* sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(C1_data, d_C1_data, nC1 * pC1 * lC1*sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(S1_data, d_S1_data, nS1 * pS1 * lS1* sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(C1_kernel, d_C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyDeviceToHost);
 
-    // Affichage de la matrice sur le CPU
-    printf("Matrice raw_data :\n");
+    cudaMemcpy(Conv2_data, d_Conv2_data, nC2 * pC2 * lC2*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(S2_data, d_S2_data, nS2 * pS2 * lS2* sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(Conv2_kernel, d_Conv2_kernel, nk2 * pk2 * lk2* sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(flatten_data, d_flatten_data, nf * pf * lf* sizeof(float), cudaMemcpyDeviceToHost);
 
-    MatrixPrint3D(raw_data, nr, pr,lr);
+    // Affichage de la matrice sur le CPU
+    // printf("Matrice raw_data :\n");
+
+    // MatrixPrint3D(raw_data, nr, pr,lr);
 
     // printf("Matrice C1_data :\n");
 
     // MatrixPrint3D(C1_data, nC1, pC1,lC1);
 
-    printf("Matrice S1_data :\n");
+    // printf("Matrice S1_data :\n");
 
-    MatrixPrint3D(S1_data, nS1, pS1,lS1);
+    // MatrixPrint3D(S1_data, nS1, pS1,lS1);
 
-    printf("Matrice C1_kernel :\n");
+    // printf("Matrice C1_kernel :\n");
 
-    MatrixPrint3D(C1_kernel, nk, pk,lk);
+    // MatrixPrint3D(C1_kernel, nk, pk,lk);
+
+    // printf("Matrice Conv2_data :\n");
+
+    // MatrixPrint3D(Conv2_data, nC2, pC2,lC2);
+
+    printf("Matrice S2_data :\n");
+
+    MatrixPrint3D(S2_data, nS2, pS2,lS2);
+
+    // printf("Matrice Conv2_kernel :\n");
+
+    // MatrixPrint3D(Conv2_kernel, nk2, pk2,lk2);
+
+    printf("Matrice flatten_matrix :\n");
+
+    MatrixPrint3D(flatten_data, nf, pf,lf);
+    
 
     // Libération de la mémoire sur le CPU et le GPU
     free(raw_data);
@@ -251,9 +386,119 @@ int main() {
     free(C1_kernel);
     cudaFree(d_C1_kernel);
 
+    free(Conv2_data);
+    cudaFree(d_Conv2_data);
+
+    free(S2_data);
+    cudaFree(d_S2_data);
+
+    free(Conv2_kernel);
+    cudaFree(d_Conv2_kernel);
+
+    free(flatten_data);
+    cudaFree(d_flatten_data);
+
     return 0;
 
 }
+
+/// 2 premières couches  
+
+// int main() {
+    
+//     float *raw_data;
+//     float *d_raw_data; // Pointeur pour la matrice sur le GPU
+//     int nr=32;
+//     int pr=32;
+//     int lr=1;
+//     float *C1_data;
+//     float *d_C1_data;
+//     int nC1=28;
+//     int pC1=28;
+//     int lC1=6;
+//     float *S1_data;
+//     float *d_S1_data;
+//     int nS1=14;
+//     int pS1=14;
+//     int lS1=6;
+//     float *C1_kernel;
+//     float *d_C1_kernel;
+//     int nk=5;
+//     int pk=5;
+//     int lk=6;
+//     srand(time(NULL));
+
+//     // Allocation de mémoire pour la matrice sur le GPU
+//     cudaMalloc((void **)&d_raw_data, nr * pr * lr*sizeof(float));
+//     cudaMalloc((void **)&d_C1_data, nC1 * pC1 * lC1* sizeof(float));
+//     cudaMalloc((void **)&d_S1_data, nS1 * pS1 * lS1* sizeof(float));
+//     cudaMalloc((void **)&d_C1_kernel, nk * pk * lk* sizeof(float));
+
+//     // Allocation et initialisation de la matrice sur le CPU
+//     raw_data = (float *)malloc(nr * pr * lr*sizeof(float));
+//     C1_data = (float *)malloc(nC1 * pC1 * lC1*sizeof(float));
+//     S1_data = (float *)malloc(nS1 * pS1 * lS1*sizeof(float));
+//     C1_kernel = (float *)malloc(nk * pk * lk* sizeof(float));
+    
+//     MatrixInit3D(raw_data, nr,pr,lr,0);
+//     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
+//     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
+//     MatrixInit3D(C1_kernel, nk,pk,lk,1);
+
+//     C1_kernel[12]=2;
+//     C1_kernel[25+12]=1;
+
+    
+//     // Copie de la matrice du CPU vers le GPU
+//     cudaMemcpy(d_raw_data, raw_data, nr * pr * lr*sizeof(float), cudaMemcpyHostToDevice);
+//     cudaMemcpy(d_C1_data, C1_data, nC1 * pC1 * lC1* sizeof(float), cudaMemcpyHostToDevice);
+//     cudaMemcpy(d_S1_data, S1_data, nS1 * pS1 * lS1*  sizeof(float), cudaMemcpyHostToDevice);
+//     cudaMemcpy(d_C1_kernel, C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyHostToDevice);
+
+//     dim3 gridDim(nC1,nC1,lC1);
+//     Convolution2DGPU<<<gridDim,1>>>(d_raw_data, d_C1_kernel, d_C1_data,nr,nk);
+
+//     dim3 gridDim2(nS1,pS1,lS1);
+//     Moyennage2DGPU<<<gridDim2,1>>>(d_C1_data, d_S1_data, nC1);
+
+//     cudaMemcpy(raw_data, d_raw_data, nr * pr * lr* sizeof(float), cudaMemcpyDeviceToHost);
+//     cudaMemcpy(C1_data, d_C1_data, nC1 * pC1 * lC1*sizeof(float), cudaMemcpyDeviceToHost);
+//     cudaMemcpy(S1_data, d_S1_data, nS1 * pS1 * lS1* sizeof(float), cudaMemcpyDeviceToHost);
+//     cudaMemcpy(C1_kernel, d_C1_kernel, nk * pk * lk* sizeof(float), cudaMemcpyDeviceToHost);
+
+//     // Affichage de la matrice sur le CPU
+//     printf("Matrice raw_data :\n");
+
+//     MatrixPrint3D(raw_data, nr, pr,lr);
+
+//     // printf("Matrice C1_data :\n");
+
+//     // MatrixPrint3D(C1_data, nC1, pC1,lC1);
+
+//     printf("Matrice S1_data :\n");
+
+//     MatrixPrint3D(S1_data, nS1, pS1,lS1);
+
+//     printf("Matrice C1_kernel :\n");
+
+//     MatrixPrint3D(C1_kernel, nk, pk,lk);
+
+//     // Libération de la mémoire sur le CPU et le GPU
+//     free(raw_data);
+//     cudaFree(d_raw_data);
+
+//     free(C1_data);
+//     cudaFree(d_C1_data);
+
+//     free(S1_data);
+//     cudaFree(d_S1_data);
+
+//     free(C1_kernel);
+//     cudaFree(d_C1_kernel);
+
+//     return 0;
+
+// }
 
 // / tester  la somme et la multiplication de matrices  
 // int main() {
