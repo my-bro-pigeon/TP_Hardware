@@ -32,7 +32,7 @@ Matmult.cu : Réalise la multiplication de deux matrices en comparant le temps d
 tester_limites.cu : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
 
--Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D et subsampling
+Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D, subsampling et activation
 -
 L'architecture du réseau LeNet-5 est composé de plusieurs couches :
 
@@ -52,23 +52,10 @@ On effectue un test simple : On prend une matrice d'entrée initialisée avec qu
 
 On obtient bien en sortie un premier layer remplie de 0,96 (=tanh(2)) et un deuxième layer de 0,76 (=tanh(1))
 
-Convolution 2D et subsampling
+Partie 3 - Modèle complet
 -
 
-3.1. Layer 1 - Génération des données de test
--
-
-3.2. Layer 2 - Convolution 2D
--
-
-3.3. Layer 3 - Sous-échantillonnage
--
-
-3.4. Tests
--
-
-3.5. Fonctions d'activation
--
+3.1.
 
 
 
@@ -76,12 +63,6 @@ Convolution 2D et subsampling
 
 
 
-
-
-Partie 3 - Un peu de Python
--
-
-entrainement de votre réseau de neurone
 
 
 
