@@ -50,6 +50,8 @@ Implémentation de la couche de convolution ainsi que la sous-echantillonnage et
 
 On effectue un test simple : On prend une matrice d'entrée initialisée avec que des 1, un premier kernel avec un 2 au centre, un deuxième kernel avec un 1              au centre et les autre kernels à 0
 
+On obtient bien en sortie un premier layer remplie de 0,96 (=tanh(2)) et un deuxième layer de 0,76 (=tanh(1))
+
 Convolution 2D et subsampling
 -
 
