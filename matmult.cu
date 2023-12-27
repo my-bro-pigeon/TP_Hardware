@@ -42,6 +42,26 @@ void MatrixPrint3D(float *M, int n, int p, int l) {
     }
 }
 
+void MatrixAdd(float *M1, float *M2, float *Mout, int n, int p) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < p; ++j) {
+            Mout[i * p + j] = M1[i * p + j] + M2[i * p + j];
+        }
+    }
+}
+
+// Fonction de multiplication de deux matrices NxN sur CPU
+void MatrixMult(float *M1, float *M2, float *Mout, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            float sum = 0.0f;
+            for (int k = 0; k < n; ++k) {
+                sum += M1[i * n + k] * M2[k * n + j];
+            }
+            Mout[i * n + j] = sum;
+        }
+    }
+}
 
 __global__ void cudaMatrixAdd(float *M1, float *M2, float *Mout) {
     int n = gridDim.x;
@@ -76,19 +96,21 @@ __device__ float activation_tanh(float M) {
 }
 
 int main() {
-    int n = 5;
-    int p = 2;
+    int n = 500;
+    int p = 500;
 
-    int n1 = 8;
-    int p1 = 5;
+    int n1 = 500;
+    int p1 = 500;
 
-    int nout = 8;
-    int pout = 2;
+    int nout = 500;
+    int pout = 500;
     float *matrix;
     float *d_matrix; // Pointeur pour la matrice sur le GPU
 
     float *matrix2;
     float *d_matrix2;
+
+    float *cpu_out;
 
     // float *matrixOut;
     // float *d_matrixOut;
@@ -106,12 +128,20 @@ int main() {
     // Allocation et initialisation de la matrice sur le CPU
     matrix = (float *)malloc(n * p * sizeof(float));
     matrix2 = (float *)malloc(n1 * p1 * sizeof(float));
-    //matrixOut = (float *)malloc(n * p * sizeof(float));
+    cpu_out = (float *)malloc(n * p * sizeof(float));
     matrixOutMult = (float *)malloc(nout * pout  * sizeof(float));
 
     MatrixInit3D(matrix, n, p,1,0);
     MatrixInit3D(matrix2, n1, p1,1,0);
+    MatrixInit3D(cpu_out, n, p,1,0);
     MatrixInit3D(matrixOutMult, nout, pout,1,0);
+
+    // Mesure du temps pour la multiplication sur CPU
+    clock_t start_cpu_mult = clock();
+    MatrixMult(matrix, matrix2, cpu_out, n);
+    clock_t end_cpu_mult = clock();
+    double cpu_time_mult = ((double)(end_cpu_mult - start_cpu_mult)) / CLOCKS_PER_SEC;
+
 
     // Copie de la matrice du CPU vers le GPU
     cudaMemcpy(d_matrix, matrix, n * p * sizeof(float), cudaMemcpyHostToDevice);
@@ -119,28 +149,40 @@ int main() {
     //dim3 gridDim(n,p);
 
     //cudaMatrixAdd<<<n,p>>>(d_matrix, d_matrix2, d_matrixOut, n, p);
+    clock_t start_gpu_mult = clock();
     dim3 gridDim(nout,pout,1);
     cudaMatrixMult<<<gridDim,1>>>(d_matrix, d_matrix2, d_matrixOutMult, n);
+    cudaDeviceSynchronize(); // Attente de la fin du kernel
+    clock_t end_gpu_mult = clock();
+    double gpu_time_mult = ((double)(end_gpu_mult - start_gpu_mult)) / CLOCKS_PER_SEC;
 
+    
     //cudaMemcpy(matrixOut, d_matrixOut, n * p * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(matrixOutMult, d_matrixOutMult, nout*pout * sizeof(float), cudaMemcpyDeviceToHost);
 
     // Affichage de la matrice sur le CPU
-    printf("Matrice 1 :\n");
+    // printf("Matrice 1 :\n");
 
-    MatrixPrint3D(matrix, n, p,1);
+    // MatrixPrint3D(matrix, n, p,1);
 
-    printf("Matrice 2 :\n");
+    // printf("Matrice 2 :\n");
 
-    MatrixPrint3D(matrix2, n1, p1,1);
+    // MatrixPrint3D(matrix2, n1, p1,1);
 
-    // printf("Somme :\n");
+    // // printf("Somme :\n");
 
-    // MatrixPrint(matrixOut, n, p);
+    // // MatrixPrint(matrixOut, n, p);
+    // printf("Mult CPU:\n");
 
-    printf("Mult :\n");
+    // MatrixPrint3D(cpu_out, n, p,1);
 
-    MatrixPrint3D(matrixOutMult, nout, pout,1);
+    // printf("Mult GPU:\n");
+    // MatrixPrint3D(matrixOutMult, nout, pout,1);
+
+    printf("Temps pour la multiplication de matrices sur CPU : %.5f secondes\n", cpu_time_mult);
+    printf("Temps pour la multiplication de matrices sur GPU : %.5f secondes\n", gpu_time_mult);
+
+    
     // Libération de la mémoire sur le CPU et le GPU
     free(matrix);
     cudaFree(d_matrix);
@@ -151,9 +193,12 @@ int main() {
     // free(matrixOut);
     // cudaFree(d_matrixOut);
 
+    free(cpu_out);
+
     free(matrixOutMult);
     cudaFree(d_matrixOutMult);
 
     return 0;
 
 }
+
