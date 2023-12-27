@@ -7,6 +7,7 @@
 
 Partie 1 - Prise en main de Cuda : Multiplication de matrices
 -
+Objectifs : 
 
 -Allocation de la mémoire
 
@@ -26,7 +27,7 @@ Partie 1 - Prise en main de Cuda : Multiplication de matrices
 
 -Paramétrage de votre programme
 
-
+FIchier 
 
 -Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D et subsampling
 -
