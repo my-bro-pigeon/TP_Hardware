@@ -27,7 +27,10 @@ Partie 1 - Prise en main de Cuda : Multiplication de matrices
 
 -Paramétrage de votre programme
 
-FIchier 
+**FIchier**
+Matmult.cu : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU 
+tester_limites.cu : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
+
 
 -Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D et subsampling
 -
@@ -39,7 +42,9 @@ Layer 2- Convolution avec 6 noyaux de convolution de taille 5x5. La taille résu
 
 Layer 3- Sous-échantillonnage d'un facteur 2. La taille résultantes des données est donc de 6x14x14.
 
-
+**Fichier**
+Partie2.cu : implémentation de la couche de convolution ainsi que la sous-echantillonnage et l'activation
+             On effectue un test simple : On prend une matrice d'entrée initialisée avec que des 1, un premier kernel avec un 2 au centre, un deuxième kernel avec un 1              au centre et les autre kernels à 0
 
 Convolution 2D et subsampling
 -
