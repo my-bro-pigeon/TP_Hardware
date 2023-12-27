@@ -7,7 +7,7 @@
 
 Partie 1 - Prise en main de Cuda : Multiplication de matrices
 -
---- Objectifs : ---
+**Objectifs :**
 
 -Allocation de la mémoire
 
