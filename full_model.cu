@@ -42,7 +42,7 @@ void readImage(float * data, int no_img){
     fread(&nbRows, sizeof(int), 1, fptr);
     fread(&nbCols, sizeof(int), 1, fptr);
 
-    for(int i=0; i<no_img; i++){
+    for(int k=0; k<no_img; k++){
 
         for(int i=2; i<WIDTH+2; i++){
             for(int j=2; j<HEIGHT+2; j++){ 
@@ -394,37 +394,45 @@ int main() {
     dense3_bias = (float *)malloc(ndb3 * pdb3 * ldb3* sizeof(float));
     dense3_data = (float *)malloc(ndd3 * pdd3 * ldd3* sizeof(float));
 
-    MatrixInit3D(raw_data, nr,pr,lr,0);
-    //readImage(raw_data, 5);
+    MatrixInit3D(raw_data, nr,pr,lr,1);
+    readImage(raw_data, 9);
     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
-    MatrixInit3D(C1_kernel, nk,pk,lk,0);
-    //readFile((char *)"weights/k1.h", C1_kernel);
+    MatrixInit3D(C1_kernel, nk,pk,lk,1);
+    readFile((char *)"weights/k1.h", C1_kernel);
 
     MatrixInit3D(Conv2_data, nC2,pC2,lC2,1);
     MatrixInit3D(S2_data, nS2,pS2,lS2,1);
     MatrixInit3D(Conv2_kernel, nk2,pk2,lk2*depthk2,1);
+    readFile((char *)"weights/k2.h", Conv2_kernel);
 
     MatrixInit3D(flatten_data, nf,pf,lf,1);
 
-    MatrixInit3D(dense1_weight, ndw1,pdw1,ldw1,0);
-    MatrixInit3D(dense1_bias, ndb1,pdb1,ldb1,0);
+    MatrixInit3D(dense1_weight, ndw1,pdw1,ldw1,1);
+    readFile((char *)"weights/w1.h", dense1_weight);
+    MatrixInit3D(dense1_bias, ndb1,pdb1,ldb1,1);
+    readFile((char *)"weights/b1.h", dense1_bias);
     MatrixInit3D(dense1_data, ndd1,pdd1,ldd1,1);
 
-    MatrixInit3D(dense2_weight, ndw2,pdw2,ldw2,0);
-    MatrixInit3D(dense2_bias, ndb2,pdb2,ldb2,0);
+    MatrixInit3D(dense2_weight, ndw2,pdw2,ldw2,1);
+    readFile((char *)"weights/w2.h", dense2_weight);
+    MatrixInit3D(dense2_bias, ndb2,pdb2,ldb2,1);
+    readFile((char *)"weights/b2.h", dense2_bias);
     MatrixInit3D(dense2_data, ndd2,pdd2,ldd2,1);
 
-    MatrixInit3D(dense3_weight, ndw3,pdw3,ldw3,0);
-    MatrixInit3D(dense3_bias, ndb3,pdb3,ldb3,0);
+    MatrixInit3D(dense3_weight, ndw3,pdw3,ldw3,1);
+    readFile((char *)"weights/w3.h", dense3_weight);
+    MatrixInit3D(dense3_bias, ndb3,pdb3,ldb3,1);
+    readFile((char *)"weights/b3.h", dense3_bias);
     MatrixInit3D(dense3_data, ndd3,pdd3,ldd3,1);
 
+    //Pour tester mes convolutions, création de kernels naifs : 
     // C1_kernel[12]=2;
     // C1_kernel[5*25+12]=1;
 
-    Conv2_kernel[12]=1;
-    Conv2_kernel[25+12]=1;
-    Conv2_kernel[92*25+12]=1;
+    // Conv2_kernel[12]=1;
+    // Conv2_kernel[25+12]=1;
+    // Conv2_kernel[92*25+12]=1;
 
     // Copie de la matrice du CPU vers le GPU
     cudaMemcpy(d_raw_data, raw_data, nr * pr * lr*sizeof(float), cudaMemcpyHostToDevice);
@@ -522,9 +530,9 @@ int main() {
 
     // MatrixPrint3D(C1_kernel, nk, pk,lk);
 
-    printf("Matrice Conv2_data :\n");
+    // printf("Matrice Conv2_data :\n");
 
-    MatrixPrint3D(Conv2_data, nC2, pC2,lC2);
+    // MatrixPrint3D(Conv2_data, nC2, pC2,lC2);
 
     // printf("Matrice S2_data :\n");
 
@@ -558,9 +566,9 @@ int main() {
 
     // MatrixPrint3D(dense3_bias, ndb3, pdb3,ldb3);
 
-    // printf("Matrice dense3_data :\n");
+    printf("Matrice dense3_data :\n");
 
-    // MatrixPrint3D(dense3_data, ndd3, pdd3,ldd3);
+    MatrixPrint3D(dense3_data, ndd3, pdd3,ldd3);
 
     // Libération de la mémoire sur le CPU et le GPU
     free(raw_data);

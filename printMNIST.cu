@@ -16,8 +16,8 @@ void imgColorPrint(int height, int width, int ***img){
   char *str="  ";
   for(row=0; row<height; row++){
     for(col=0; col<width; col++){
-        printf(img[row][col]);
-      //charBckgrndPrint(str,img[row][col]);
+        //printf(img[row][col]);
+        charBckgrndPrint(str,img[row][col]);
     }
     printf("\n");
   }
@@ -57,12 +57,14 @@ int main() {
   printf("Nb Rows : %u \n", nbRows);
   printf("Nb Cols : %u \n", nbCols);
 
-  for(i=0; i<HEIGHT; i++){
-    for(j=0; j<WIDTH; j++){ 
-      fread(&val, sizeof(unsigned char), 1, fptr);  
-      img[i][j][0]=(int)val*color[0]/255;
-      img[i][j][1]=(int)val*color[1]/255;
-      img[i][j][2]=(int)val*color[2]/255;
+  for(int k=0; k<9; k++){
+    for(i=0; i<HEIGHT; i++){
+      for(j=0; j<WIDTH; j++){ 
+        fread(&val, sizeof(unsigned char), 1, fptr);  
+        img[i][j][0]=(int)val*color[0]/255;
+        img[i][j][1]=(int)val*color[1]/255;
+        img[i][j][2]=(int)val*color[2]/255;
+      }
     }
   }
 
