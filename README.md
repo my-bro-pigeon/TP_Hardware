@@ -5,7 +5,7 @@
 
 
 
-<center><h1> **_Avant Propos_** </h1></center>
+<center><h1> Avant Propos </h1></center>
 
 _L'objectif de ce projet est d'implémenter un CNN classique : LeNet-5 en utilisant Cuda. Cela permet d'appréhender la parallélisation des calculs via l'utilisation de GPU NVidia_
 
