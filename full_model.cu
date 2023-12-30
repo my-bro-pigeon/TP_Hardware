@@ -395,7 +395,7 @@ int main() {
     dense3_data = (float *)malloc(ndd3 * pdd3 * ldd3* sizeof(float));
 
     MatrixInit3D(raw_data, nr,pr,lr,1);
-    readImage(raw_data, 9);
+    readImage(raw_data, 3);
     MatrixInit3D(C1_data, nC1,pC1,lC1,1);
     MatrixInit3D(S1_data, nS1,pS1,lS1,1);
     MatrixInit3D(C1_kernel, nk,pk,lk,1);
