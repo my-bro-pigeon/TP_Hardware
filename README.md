@@ -28,7 +28,9 @@ Partie 1 - Prise en main de Cuda : Multiplication de matrices
 -Paramétrage de votre programme
 
 **FIchier**
+
 Matmult.cu : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU 
+
 tester_limites.cu : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
 
