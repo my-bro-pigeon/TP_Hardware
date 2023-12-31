@@ -17,9 +17,9 @@ Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une 
 
 ## **Fichier** 📁
 
--> Matmult.cu : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU 
+-> _Matmult.cu_ : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU 
 
--> tester_limites.cu : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
+-> _tester_limites.cu_ : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
 
 Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D, subsampling et activation
@@ -36,7 +36,7 @@ Layer 3- Sous-échantillonnage d'un facteur 2. La taille résultantes des donné
 
 ## **Fichier** 📁
 
--> Partie2.cu : 
+-> _Partie2.cu_ : 
 
 Implémentation de la couche de convolution ainsi que la sous-echantillonnage et l'activation
 
@@ -52,17 +52,24 @@ Implémentation de toutes les couches du model // Importation du dataset MNIST /
 
 ## **Fichier** 📁
 
--> Partie3.cu : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense
+-> _Partie3.cu_ : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense
 
--> LeNet5.ipynb : récuperation des poids du modèle entrainé (grâce au fichier généré FashionMNIST_weights.h5) 
+-> _LeNet5.ipynb_ : récuperation des poids du modèle entrainé (grâce au fichier généré FashionMNIST_weights.h5) 
 
 <img width="304" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/8d8ef97b-f308-4739-afee-e487f84fd457">
 
 
--> full_model.cu : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. 
+-> _full_model.cu_ : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. 
 Résultat pour un "1" en entrée : 
+
 <img width="470" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/203f6491-03f1-4ee2-8cd6-ab1294627b07">
-Les résultats ne sont pas satisfaisant 
+
+Les résultats ne sont pas satisfaisants 
+
+-> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais des ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
+
+On utilise donc ici les fichiers .h de dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".
+Cependant les résultats ne sont pas forcément mieux qu'avec la première version du modèle. 
 
 
 
