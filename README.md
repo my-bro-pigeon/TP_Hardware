@@ -49,7 +49,7 @@ Pour l'ensemble de ces fichiers et des fichiers à venir, nous avons choisi comm
 
 <img width="200" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/27fb65ab-3ab7-4535-8359-2c4f2c043f66">
 
-Chaque élément de notre matrice de sortie correspond à un block dans une représentation 3d de la forme de la matrice de sortie. Seul un thread par block est utilisé.
+Chaque élément de notre matrice de sortie correspond à un block dans une grid "3d" de la forme de la matrice de sortie. Seul un thread par block est utilisé.
 
 
 Partie 3 - Modèle complet
