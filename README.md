@@ -54,6 +54,17 @@ Implémentation de toutes les couches du model // Importation du dataset MNIST /
 
 -> Partie3.cu : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense
 
+-> LeNet5.ipynb : récuperation des poids du modèle entrainé (grâce au fichier généré FashionMNIST_weights.h5) 
+
+<img width="304" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/8d8ef97b-f308-4739-afee-e487f84fd457">
+
+
+-> full_model.cu : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. 
+Résultat pour un "1" en entrée : 
+<img width="470" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/203f6491-03f1-4ee2-8cd6-ab1294627b07">
+Les résultats ne sont pas satisfaisant 
+
+
 
 
 
