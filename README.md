@@ -21,7 +21,7 @@ Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une 
 
 -> _Matmult.cu_ : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU 
 
--> _tester_limites.cu_ : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
+-> _tester_limites.cu_ : Test de la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
 _L'affichage d'une matrice N x N x 3 se fait comme suit : matrice 1 : N x N , matrice 2 : N x N , Matrice 3 : N x N_
 
