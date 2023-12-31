@@ -79,6 +79,10 @@ Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.
 
 -> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais des ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
 
+
+<img width="396" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/bb40be53-122b-4cb0-bfcf-293aa0c866a4">
+
+
 On utilise donc ici les fichiers .h de dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".Affichage en sortie des résultats de la dernière couche. 
 Cependant les résultats ne sont pas forcément mieux qu'avec la première version du modèle. 
 
