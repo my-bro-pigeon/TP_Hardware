@@ -45,7 +45,7 @@ On effectue un test simple : On prend une matrice d'entrée initialisée avec qu
 
 On obtient bien en sortie un premier layer remplie de 0,96 (=tanh(2)) et un deuxième layer de 0,76 (=tanh(1))
 
-Pour l'ensemble de ces fichiers et des fichiers à venir, nous choisi comme architecture Grid/Block comme ceci 
+Pour l'ensemble de ces fichiers et des fichiers à venir, nous avons choisi comme architecture Grid/Block comme ceci 
 
 <img width="200" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/27fb65ab-3ab7-4535-8359-2c4f2c043f66">
 
