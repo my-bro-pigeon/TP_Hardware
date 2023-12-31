@@ -79,7 +79,11 @@ Résultat pour un "1" en entrée :
 
 <img width="470" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/203f6491-03f1-4ee2-8cd6-ab1294627b07">
 
-Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.  
+Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.
+
+_Pour changer l'image en entrée, il faut changer la valeur ligne 398 : <img width="215" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/c53d886a-8597-42e2-bf5e-71e345c7f570"> ici nous utilisons la 3eme image du dataset._
+_Pour visualiser les images, il faut utiliser le code printMNIST.cu en faisant varier la valeur max de k ligne 60 pour changer l'image renvoyée._
+
 
 -> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais de ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
 
