@@ -21,6 +21,10 @@ Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une 
 
 -> _Matmult.cu_ : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU (également ajout des fonctions de sommes de fonction CPU et GPU).
 
+
+<img width="412" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/df7ea735-12a6-412f-887f-6b29855d6068">
+
+
 -> _tester_limites.cu_ : Test de la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
 _L'affichage d'une matrice N x N x 3 se fait comme suit : matrice 1 : N x N , matrice 2 : N x N , Matrice 3 : N x N_
@@ -35,7 +39,7 @@ Layer 1- Couche d'entrée de taille 32x32 correspondant à la taille des images 
 
 Layer 2- Convolution avec 6 noyaux de convolution de taille 5x5. La taille résultantes est donc de 6x28x28.
 
-Layer 3- Sous-échantillonnage d'un facteur 2. La taille résultantes des données est donc de 6x14x14.
+Layer 3- Sous-échantillonnage d'un facteur 2. La taille résultante des données est donc de 6x14x14.
 
 ## **Fichier** 📁
 
@@ -58,7 +62,7 @@ Partie 3 - Modèle complet
 -
 ## **Objectifs :** 🎯
 
-Implémentation de toutes les couches du model // Importation du dataset MNIST // Exportation des poids du model
+Implémentation de toutes les couches du model // Importation du dataset MNIST // Exportation des poids du modèle
 
 ## **Fichier** 📁
 
@@ -77,13 +81,13 @@ Résultat pour un "1" en entrée :
 
 Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.  
 
--> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais des ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
+-> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais de ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
 
 
 <img width="396" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/bb40be53-122b-4cb0-bfcf-293aa0c866a4">
 
 
-On utilise donc ici les fichiers .h de dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".Affichage en sortie des résultats de la dernière couche. 
+On utilise donc ici les fichiers .h du dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".Affichage en sortie des résultats de la dernière couche. 
 Cependant les résultats ne sont pas forcément mieux qu'avec la première version du modèle. 
 
 
