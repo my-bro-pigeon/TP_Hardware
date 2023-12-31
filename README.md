@@ -21,6 +21,7 @@ Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une 
 
 -> _tester_limites.cu_ : Teste la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
 
+_L'affichage d'une matrice N x N x 3 se fait comme suit : matrice 1 : N x N , matrice 2 : N x N , Matrice 3 : N x N_
 
 Partie 2 - Premières couches du réseau de neurone LeNet-5 : Convolution 2D, subsampling et activation
 -
@@ -44,6 +45,13 @@ On effectue un test simple : On prend une matrice d'entrée initialisée avec qu
 
 On obtient bien en sortie un premier layer remplie de 0,96 (=tanh(2)) et un deuxième layer de 0,76 (=tanh(1))
 
+Pour l'ensemble de ces fichiers et des fichiers à venir, nous choisi comme architecture Grid/Block comme ceci 
+
+<img width="200" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/27fb65ab-3ab7-4535-8359-2c4f2c043f66">
+
+Chaque élément de notre matrice de sortie correspond à un block dans une représentation 3d de la forme de la matrice de sortie. Seul un thread par block est utilisé.
+
+
 Partie 3 - Modèle complet
 -
 ## **Objectifs :** 🎯
@@ -60,11 +68,12 @@ Implémentation de toutes les couches du model // Importation du dataset MNIST /
 
 
 -> _full_model.cu_ : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. 
+
 Résultat pour un "1" en entrée : 
 
 <img width="470" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/203f6491-03f1-4ee2-8cd6-ab1294627b07">
 
-Les résultats ne sont pas satisfaisants 
+Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.  
 
 -> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais des ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
 
