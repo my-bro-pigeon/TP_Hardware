@@ -7,7 +7,8 @@
 
 <center><h1> Avant Propos </h1></center>
 
-_L'objectif de ce projet est d'implémenter un CNN classique : LeNet-5 en utilisant Cuda. Cela permet d'appréhender la parallélisation des calculs via l'utilisation de GPU NVidia_
+_L'objectif de ce projet est d'implémenter un CNN classique : LeNet-5 en utilisant Cuda. Cela permet d'appréhender la parallélisation des calculs via l'utilisation de GPU NVidia._
+
 _Les fichiers "vector_add_0.cu","vector_add_1.cu" et "p1.cu" ont été utilisés comme outils de compréhension de CUDA et ne sont donc pas utilisés dans les parties ci-dessous_
 
 Partie 1 - Prise en main de Cuda : Multiplication de matrices
