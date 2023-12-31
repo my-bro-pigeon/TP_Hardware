@@ -21,8 +21,8 @@ Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une 
 
 -> _Matmult.cu_ : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU (également ajout des fonctions de sommes de fonction CPU et GPU).
 
-
 <img width="412" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/df7ea735-12a6-412f-887f-6b29855d6068">
+
 
 
 -> _tester_limites.cu_ : Test de la limite du GPU en faisant des calculs de multiplication de matrices de plus en plus grand jusqu'à 10k x 10k 
