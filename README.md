@@ -62,14 +62,14 @@ Implémentation de toutes les couches du model // Importation du dataset MNIST /
 
 ## **Fichier** 📁
 
--> _Partie3.cu_ : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense
+-> _Partie3.cu_ : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense. Affichage des poids, des biais et de la sortie de la couche dense3 avec une initialisation aléatoire. 
 
 -> _LeNet5.ipynb_ : récuperation des poids du modèle entrainé (grâce au fichier généré FashionMNIST_weights.h5) 
 
 <img width="304" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/8d8ef97b-f308-4739-afee-e487f84fd457">
 
 
--> _full_model.cu_ : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. 
+-> _full_model.cu_ : importation des poids dans notre modèle grâce aux fichiers .h contenus dans le fichier /weights et ajout de la fonction de convolution 3D utile pour la deuxième couche de convolution de notre modèle. Affichage en sortie des résultats de la dernière couche. 
 
 Résultat pour un "1" en entrée : 
 
@@ -79,7 +79,7 @@ Les résultats ne sont pas satisfaisants, beaucoup d'erreurs.
 
 -> _model_V2.cu_ : Dans _full_model.cu_ nous utilisons des poids issus d'un modèle avec des biais sur les couches de convolution mais sans utiliser les biais des ces couches. On réentraine donc le modèle sans biais sur les couches de convolution <img width="583" alt="image" src="https://github.com/my-bro-pigeon/TP_Hardware/assets/81351824/aac0c670-c13d-4817-be2b-2e7b3793e401">
 
-On utilise donc ici les fichiers .h de dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".
+On utilise donc ici les fichiers .h de dossier /weights_nobias. Nous avons également remplacé les "float" par des "double".Affichage en sortie des résultats de la dernière couche. 
 Cependant les résultats ne sont pas forcément mieux qu'avec la première version du modèle. 
 
 
