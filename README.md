@@ -17,7 +17,7 @@ Partie 1 - Prise en main de Cuda : Multiplication de matrices
 
 Allocation de la mémoire // Création d'une matrice sur CPU // Affichage d'une matrice sur CPU // Addition de deux matrices sur CPU // Addition de deux matrices sur GPU-Multiplication de deux matrices NxN sur CPU // Multiplication de deux matrices NxN sur GPU // Compléxité et temps de calcul // Paramétrage de votre programme
 
-## **Fichier** 📁
+## **Fichiers** 📁
 
 -> _Matmult.cu_ : Réalise la multiplication de deux matrices en comparant le temps de calcul du CPU et du GPU (également ajout des fonctions de sommes de fonction CPU et GPU).
 
@@ -41,7 +41,7 @@ Layer 2- Convolution avec 6 noyaux de convolution de taille 5x5. La taille résu
 
 Layer 3- Sous-échantillonnage d'un facteur 2. La taille résultante des données est donc de 6x14x14.
 
-## **Fichier** 📁
+## **Fichiers** 📁
 
 -> _Partie2.cu_ : 
 
@@ -64,7 +64,7 @@ Partie 3 - Modèle complet
 
 Implémentation de toutes les couches du model // Importation du dataset MNIST // Exportation des poids du modèle
 
-## **Fichier** 📁
+## **Fichiers** 📁
 
 -> _Partie3.cu_ : implémenation du modèle complet, ajout de la couche de convolution 2, du flatten et des trois couches dense. Affichage des poids, des biais et de la sortie de la couche dense3 avec une initialisation aléatoire. 
 
